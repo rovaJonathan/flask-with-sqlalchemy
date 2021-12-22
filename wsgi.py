@@ -58,3 +58,14 @@ def create_product():
     db.session.commit()
 
     return "", 201
+
+@app.route('/api/v1/products/<int:id_product>', methods=["DELETE"])
+def delete_one_product(id_product):
+    product = Product.query.filter_by(id=id_product).delete()
+
+    if product is None:
+        abort(404)
+    
+    db.session.commit()
+
+    return '', 204
