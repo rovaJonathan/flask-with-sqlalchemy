@@ -57,7 +57,7 @@ def create_product():
     db.session.add(product)
     db.session.commit()
 
-    return "", 201
+    return one_product_schema.jsonify(product), 201
 
 @app.route('/api/v1/products/<int:id_product>', methods=["DELETE"])
 def delete_one_product(id_product):
@@ -69,3 +69,27 @@ def delete_one_product(id_product):
     db.session.commit()
 
     return '', 204
+
+@app.route(f'/api/v1/products/<int:id>', methods=['PATCH'])
+def update_product(id):
+    data = request.get_json()
+    if data is None:
+        abort(400)
+
+    name = data.get('name')
+
+    if name is None:
+        abort(400)
+
+    if name == '' or not isinstance(name, str):
+        abort(422)
+
+    product = db.session.query(Product).get(id)
+
+    if product is None:
+        abort(404)
+
+    product.name = name
+    db.session.commit()
+
+    return one_product_schema.jsonify(product), 200
